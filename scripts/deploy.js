@@ -3,24 +3,19 @@ const hre = require("hardhat");
 async function main() {
   const [owner, randomAddress] = await hre.ethers.getSigners();
   const contractFactory = await hre.ethers.getContractFactory("PolygonENS")
-  const domainContract = await contractFactory.deploy()
+  const domainContract = await contractFactory.deploy("abx")
   await domainContract.deployed();
   console.log("Contract deployed to:", domainContract.address);
   console.log("Contract deployed by: ", owner);
 
-  let txn = await domainContract.register("test");
+  let txn = await domainContract.register("mortal", {value: hre.ethers.utils.parseEther('0.1')});
   await txn.wait();
 
-  const domainOwner = await domainContract.getAddress("test");
-  console.log("test domain is owned by: ", domainOwner);
+  const address = await domainContract.getAddress("mortal");
+  console.log("test domain is owned by: ", address);
 
-
-  let txn2 = await domainContract.connect(randomAddress).register("mastermind");
-  await txn2.wait();
-
-  txn2 = await domainContract.connect(randomAddress).setRecord("mastermind", "This test should work");
-  await txn2.wait();
-  
+  const balance = await hre.ethers.provider.getBalance(domainContract.address);
+  console.log("Contract Balance: ", hre.ethers.utils.formatEther(balance))
 
 
 }
