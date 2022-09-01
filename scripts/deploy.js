@@ -1,27 +1,30 @@
 const hre = require("hardhat");
 
 async function main() {
-  const [owner, randomAddress] = await hre.ethers.getSigners();
-  const contractFactory = await hre.ethers.getContractFactory("PolygonENS")
-  const domainContract = await contractFactory.deploy("abx")
-  await domainContract.deployed();
-  console.log("Contract deployed to:", domainContract.address);
-  console.log("Contract deployed by: ", owner);
+    const contractFactory = await hre.ethers.getContractFactory("PolygonENS")
+    const domainContract = await contractFactory.deploy("abx")
+    await domainContract.deployed();
 
-  let txn = await domainContract.register("mortal", {value: hre.ethers.utils.parseEther('0.1')});
-  await txn.wait();
+    console.log("Contract deployed to:", domainContract.address);
 
-  const address = await domainContract.getAddress("mortal");
-  console.log("test domain is owned by: ", address);
+    let txn = await domainContract.register("mumbaitest", {value: hre.ethers.utils.parseEther('0.1')});
+    await txn.wait();
+    console.log("Minted domain name mumbaitest " )
 
-  const balance = await hre.ethers.provider.getBalance(domainContract.address);
-  console.log("Contract Balance: ", hre.ethers.utils.formatEther(balance))
+    txn = await domainContract.setRecord("mumbaitest", "this is a test on the mumbai testnet")
+    await txn.wait()
+    console.log("Record information was set for mumbaitest.abx")
+
+    const address = await domainContract.getAddress("mumbaitest");
+    console.log("mumbaitest.abx domain is owned by: ", address);
+
+    const balance = await hre.ethers.provider.getBalance(domainContract.address);
+    console.log("Contract Balance: ", hre.ethers.utils.formatEther(balance))
 
 
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
