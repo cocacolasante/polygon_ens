@@ -261,6 +261,10 @@ input:focus {
   cursor: pointer;
 }
 
+.image-gif{
+  height: 300px;
+}
+
 /* KeyFrames */
 @-webkit-keyframes gradient-animation {
   0% {
