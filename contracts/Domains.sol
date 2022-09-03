@@ -25,6 +25,10 @@ contract PolygonENS is ERC721URIStorage {
     mapping(string => string) public records;
     mapping(uint => string) public names;
 
+    error Unauthorized();
+    error AlreadyRegistered();
+    error InvalidName(string name);
+
     modifier onlyOwner {
         require(isOwner());
         _;
@@ -58,11 +62,23 @@ contract PolygonENS is ERC721URIStorage {
             return 1 * 10**17;
         }
     }
+    // get all names
+    function getAllNames() public view returns(string[] memory){
+        console.log("Getting names from contract:");
+        string[] memory allNames = new string[](_tokenIds.current());
+        for(uint i = 0; i < _tokenIds.current(); i++){
+            allNames[i] = names[i];
+            console.log("Name for token %d is %s", i, allNames[i]);
+        }
+        return allNames;
 
+    }
 
     // register domain name and add to maping
     function register(string calldata name) public payable {
-        require(domains[name] == address(0), "already registered");
+
+        if (domains[name] != address(0)) revert AlreadyRegistered();
+        if (!valid(name)) revert InvalidName(name);
 
         uint _price = price(name);
 
@@ -94,6 +110,7 @@ contract PolygonENS is ERC721URIStorage {
         _safeMint(msg.sender, newRecordId);
         _setTokenURI(newRecordId, finalTokenUri);
         domains[name] = msg.sender;
+        names[newRecordId] = name;
         _tokenIds.increment();
     }
 
@@ -102,12 +119,16 @@ contract PolygonENS is ERC721URIStorage {
     }
 
     function setRecord(string calldata _name, string calldata _record) public {
-        require(domains[_name] == msg.sender, "not owner");
+       if (msg.sender != domains[_name]) revert Unauthorized();
         records[_name] = _record;
 
     }
     function getRecord(string calldata _name) public view returns(string memory) {
         return records[_name];
+    }
+
+    function valid(string calldata name) public pure returns(bool){
+        return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 10;
     }
 
 
