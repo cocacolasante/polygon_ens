@@ -145,7 +145,7 @@ const App = () => {
 				await tx.wait();
 
 				console.log("Record set! https://mumbai.polygonscan.com/tx/"+tx.hash);
-				
+
 				alert(`Domain ${domain} has been MINTED!!!!`)
 				
 				setTimeout(()=> {
@@ -356,7 +356,7 @@ const App = () => {
 						href={TWITTER_LINK}
 						target="_blank"
 						rel="noreferrer"
-					>{`built with @${TWITTER_HANDLE}`}</a>
+					>{`built by @${TWITTER_HANDLE}`}</a>
 				</div>
 			</div>
 		</div>

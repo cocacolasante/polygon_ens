@@ -11,7 +11,8 @@ p {
 
 .container {
   height: 100%;
-  background-color: #181818;
+  background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(47,47,94,1) 29%, rgba(29,110,156,1) 58%, rgba(0,212,255,1) 85%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -228,7 +229,7 @@ input:focus {
   border-radius: 5px;
   margin: 10px 15px;
   font-size: 18px;
-  background-color: #c4b7fa;
+  background-color: #f44336;
   color: black;
   min-width: 150px;
   max-width: fit-content;
@@ -237,15 +238,15 @@ input:focus {
 
 /* Different background-colour for every nth mint-item */
 .mint-item:nth-child(2n) {
-  background-color: lightblue;
+  background-color: #f44336;
 }
 
 .mint-item:nth-child(3n) {
-  background-color: lightpink;
+  background-color: #f44336;
 }
 
 .mint-item:nth-child(5n) {
-  background-color: lightgreen;
+  background-color: #f44336;
 }
 
 .link{
