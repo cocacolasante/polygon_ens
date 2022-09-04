@@ -2,8 +2,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import twitterLogo from './assets/twitter-logo.svg';
+import polygonLogo from "./assets/polygonlogo.png";
+import ethLogo from "./assets/ethlogo.png";
 import {ethers} from "ethers";
 import contractAbi from "./utils/contractAbi.json";
+import {networks} from "./utils/networks";
 
 // Constants
 const TWITTER_HANDLE = 'cocacolasante';
@@ -13,6 +16,10 @@ const tld = '.ninja';
 const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 
 const App = () => {
+
+	const [network, setNetwork] = useState("");
+
+
 	const [currentAccount, setCurrentAccount] = useState('');
 	// Add some state data propertie
 	const [domain, setDomain] = useState('');
@@ -55,7 +62,53 @@ const App = () => {
 		} else {
 			console.log('No authorized account found');
 		}
+
+		const chainId = await ethereum.request({ method: 'eth_chainId'});
+		setNetwork(networks[chainId]);
+
+		ethereum.on('chainChanged', handleChainChanged);
+
+		function handleChainChanged(_chainId) {
+			window.location.reload();
+		}
 	};
+
+	const switchNetwork = async () => {
+		if(window.ethereum){
+			try {
+
+			}catch(error){
+				if(error.code === 4902){
+					try{
+						await window.ethereum.request({
+							method: 'wallet_addEthereumChain',
+							params: [
+								{
+									chainId: '0x13881',
+									chainName: 'Polygon Mumbai Testnet',
+									rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+									nativeCurrency: {
+										name: "Mumbai Matic",
+										symbol: "MATIC",
+										decimals: 18
+									},
+									blockExplorerUrls: ["https://mumbai.polygonscan.com/"]
+								}
+							]
+						})
+
+					} catch(error){
+						console.log(error)
+					}
+				}
+				console.log(error)
+
+			}
+		} else {
+			alert('Metamask is not installed')
+		}
+	}
+
 	const mintDomain = async () => {
 		// Don't run if the domain is empty
 		if (!domain) { return }
@@ -116,6 +169,14 @@ const App = () => {
 	
 	// Form to enter domain name and data
 	const renderInputForm = () =>{
+		if(network !== 'Polygon Mumbai Testnet'){
+			return (
+				<div className="connect-wallet-container">
+					<p>Please connect to Mumbai Testnet</p>
+					<button className="cta-button mint-button" onClick={switchNetwork}>Click here to switch networks</button>
+				</div>
+			);
+		}
 		return (
 			<div className="form-container">
 				<div className="first-row">
@@ -155,13 +216,17 @@ const App = () => {
 	return (
 		<div className="App">
 			<div className="container">
-				<div className="header-container">
-					<header>
-						<div className="left">
-							<p className="title">ABX Name Service</p>
-							<p className="subtitle">Your Video Game Domain on the blockchain!</p>
-						</div>
-					</header>
+			<div className="header-container">
+				<header>
+					<div className="left">
+					<p className="title">ABX Name Service</p>
+					<p className="subtitle">Your video game domain service on the blockchain!</p>
+					</div>
+					<div className="right">
+					<img alt="Network logo" className="logo" src={ network.includes("Polygon") ? polygonLogo : ethLogo} />
+					{ currentAccount ? <p> Wallet: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </p> : <p> Not connected </p> }
+					</div>
+				</header>
 				</div>
 				
 				{!currentAccount && renderNotConnectedContainer()}
